@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GZWDY9HEDK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GZWDY9HEDK');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>メルスタもつ煮案内所</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C8102E;
+    --red-dark: #8B0A1F;
+    --black: #0D0D0D;
+    --white: #F5F0EB;
+    --gray: #2A2A2A;
+    --gold: #C9A84C;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--red-dark);
+    border-bottom: 3px solid var(--gold);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-text h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+  }
+  .header-text p {
+    font-size: 0.7rem;
+    color: rgba(245,240,235,0.6);
+    margin-top: 2px;
+  }
+  main {
+    flex: 1;
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  #chat-window {
+    flex: 1;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+  }
+  #chat-window::-webkit-scrollbar { width: 4px; }
+  #chat-window::-webkit-scrollbar-thumb { background: var(--red-dark); border-radius: 2px; }
+  .msg { display: flex; gap: 10px; animation: fadeUp 0.3s ease forwards; opacity: 0; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .msg.bot { align-items: flex-start; }
+  .msg.user { flex-direction: row-reverse; }
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--red-dark);
+    border: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .bubble {
+    max-width: 82%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    line-height: 1.75;
+    font-size: 0.88rem;
+  }
+  .msg.bot .bubble {
+    background: var(--gray);
+    border-top-left-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .msg.user .bubble {
+    background: var(--red-dark);
+    border-top-right-radius: 4px;
+  }
+  .priority-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .priority-btn {
+    background: transparent;
+    border: 1.5px solid rgba(201,168,76,0.4);
+    color: var(--white);
+    padding: 12px 10px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .priority-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.1); }
+  .priority-btn.selected { border-color: var(--gold); background: rgba(201,168,76,0.2); color: var(--gold); font-weight: 700; }
+  .priority-btn:disabled { opacity: 0.35; cursor: default; }
+  .confirm-btn {
+    background: var(--gold);
+    border: none;
+    color: var(--black);
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 12px;
+    width: 100%;
+    transition: opacity 0.2s;
+  }
+  .confirm-btn:hover { opacity: 0.85; }
+  .confirm-btn:disabled { opacity: 0.3; cursor: default; }
+  .choices { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .choice-btn {
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--white);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .choice-btn:hover { background: rgba(201,168,76,0.15); transform: translateX(4px); }
+  .choice-btn.selected { background: var(--gold); color: var(--black); font-weight: 700; }
+  .choice-btn:disabled { opacity: 0.35; cursor: default; transform: none; }
+  .step-indicator {
+    font-size: 0.7rem;
+    color: rgba(245,240,235,0.4);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+  .result-card {
+    background: #1E1E1E;
+    border: 2px solid var(--gold);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .result-rank {
+    background: var(--gold);
+    color: var(--black);
+    font-weight: 900;
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    letter-spacing: 0.05em;
+  }
+  .result-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+  }
+  .result-img-placeholder {
+    width: 100%;
+    height: 140px;
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+  }
+  .result-body { padding: 14px; }
+  .result-name {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .base-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+  }
+  .base-miso   { background: rgba(180,100,40,0.25); color: #E8A060; border: 1px solid rgba(180,100,40,0.4); }
+  .base-shoyu  { background: rgba(80,50,20,0.3);   color: #C8A070; border: 1px solid rgba(80,50,20,0.4); }
+  .base-tomato { background: rgba(200,30,30,0.2);  color: #FF8080; border: 1px solid rgba(200,30,30,0.4); }
+  .result-desc {
+    font-size: 0.82rem;
+    color: rgba(245,240,235,0.75);
+    line-height: 1.65;
+  }
+  .runner-up {
+    background: #1A1A1A;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+  }
+  .runner-up-title {
+    color: rgba(245,240,235,0.4);
+    font-size: 0.72rem;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .runner-up-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .runner-up-row:last-child { border-bottom: none; }
+  .runner-up-num { color: var(--gold); font-weight: 700; font-size: 0.78rem; width: 24px; flex-shrink: 0; padding-top: 2px; }
+  .runner-up-info { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+  .runner-up-name { color: var(--white); font-weight: 700; font-size: 0.85rem; }
+  .runner-up-location { color: rgba(245,240,235,0.4); font-size: 0.75rem; }
+  .desc-toggle {
+    background: transparent;
+    border: 1px solid rgba(245,240,235,0.2);
+    color: rgba(245,240,235,0.5);
+    font-size: 0.72rem;
+    font-family: inherit;
+    padding: 3px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.2s;
+  }
+  .desc-toggle:hover { border-color: var(--gold); color: var(--gold); }
+  .restart-btn {
+    background: var(--red-dark);
+    border: 1.5px solid var(--red);
+    color: var(--white);
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 12px;
+    width: 100%;
+    transition: background 0.2s;
+  }
+  .restart-btn:hover { background: var(--red); }
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:1.8rem">🍲</div>
+  <div class="header-text">
+    <h1>メルスタもつ煮案内所</h1>
+    <p>あなたにぴったりのもつ煮を見つけよう</p>
+  </div>
+</header>
+<div id="search-area" style="max-width:680px;width:100%;margin:0 auto;padding:10px 16px 0;">
+  <div style="display:flex;gap:8px;align-items:center;">
+    <input id="shop-search" type="text" placeholder="🔍 お店を検索..." style="flex:1;background:#2A2A2A;border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:9px 14px;color:#F5F0EB;font-family:inherit;font-size:0.88rem;outline:none;" oninput="handleSearch(this.value)">
+    <button onclick="document.getElementById('shop-search').value='';handleSearch('');" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(245,240,235,0.5);border-radius:10px;padding:9px 12px;cursor:pointer;font-size:0.8rem;">✕</button>
+  </div>
+  <div id="search-results" style="display:none;margin-top:8px;display:none;"></div>
+</div>
+<main>
+  <div id="chat-window"></div>
+</main>
+
+<script>
+var SHOPS = [
+  {
+    name: "鹿島食肉事業協同組合",
+    location: "メインスタンド2階アウェイ側",
+    locationNote: null,
+    desc: "全てのもつ煮はここから始まる、もつ煮界のキング。濃い目の味噌ベースでもつが具材の6〜7割を占める王道スタイル。カシマのもつ煮を初めて食べるならまずここから！",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/shokuniku.jpeg",
+    base: "味噌",
+    scores: { taste:4, unique:1, motsu_veg:4, not_crowded:1, other_menu:2, base_type:1 }
+  },
+  {
+    name: "味処いがらし",
+    location: "メインスタンド2階アウェイ側",
+    locationNote: null,
+    desc: "醤油ベースのわりとあっさりした味付け。ざく切りで分厚くカットされた具材は食べ応え十分で、ネギがたっぷり入っておりネギ好きには嬉しい一杯。もつ煮丼もあり。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/igarashi.jpeg",
+    base: "醤油",
+    scores: { taste:2, unique:3, motsu_veg:3, not_crowded:4, other_menu:4, base_type:3 }
+  },
+  {
+    name: "居酒屋ドリーム",
+    location: "場外売店 or ホームゴール裏4階スタンド",
+    locationNote: "特定日限定",
+    desc: "カシマ名物「ハラミメシ」を生み出した売店。濃い目の味噌ベースでもつ多め。豆腐がもつ煮の旨味を吸って絶品。ピリ辛の赤もつ煮・赤メシもあり、Xで公開されている試合日限定メニューも要チェック！",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/dream.jpeg",
+    base: "味噌",
+    scores: { taste:5, unique:2, motsu_veg:3, not_crowded:1, other_menu:5, base_type:1 }
+  },
+  {
+    name: "仲町商店会",
+    location: "メインスタンド2階ホーム側",
+    locationNote: null,
+    desc: "味噌ベースながら食べやすいあっさり目な味付けが特徴。もつや野菜のバランスが良くクセがなくとっつきやすい。しらす丼やつみれ汁が名物の売店で、もつ煮は穴場的存在。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/nakamachi.jpeg",
+    base: "味噌",
+    scores: { taste:4, unique:1, motsu_veg:5, not_crowded:3, other_menu:5, base_type:1 }
+  },
+  {
+    name: "エミール",
+    location: "ホームゴール裏2階メインスタンド側",
+    locationNote: null,
+    desc: "醤油の味が強めで個性的な一杯。ゴロゴロ入った大きな大根がとにかく印象的で、もつ煮の旨味がしっかり染み込んでいる。もつ煮うどん・もつ煮そばも同価格で楽しめる！",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/emiil.jpeg",
+    base: "醤油",
+    scores: { taste:3, unique:3, motsu_veg:3, not_crowded:1, other_menu:5, base_type:3 }
+  },
+  {
+    name: "ヤタガワ売てん",
+    location: "ホームゴール裏2階中央付近",
+    locationNote: null,
+    desc: "隠れファンが少なくない穴場店。味噌がかなり濃く、もつにたっぷり染み込んだ旨味が特徴。にんじん・こんにゃく・大根もしっかり入り、粗めのネギがアクセントになっている。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/yatagawa.jpeg",
+    base: "味噌",
+    scores: { taste:5, unique:2, motsu_veg:4, not_crowded:4, other_menu:3, base_type:1 }
+  },
+  {
+    name: "満寿屋",
+    location: "ホームゴール裏2階バックスタンド側",
+    locationNote: null,
+    desc: "鹿嶋市内の蕎麦屋が出店。味噌ベースながらあっさり目で、もつと大根がメインのシンプルな構成。小サイズがあるので他店と食べ歩きしたいときにもピッタリな一杯。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/masuya.jpeg",
+    base: "味噌",
+    scores: { taste:2, unique:4, motsu_veg:2, not_crowded:4, other_menu:3, base_type:1 }
+  },
+  {
+    name: "和風レストラン やまびこ",
+    location: "ホームゴール裏2階バックスタンド側",
+    locationNote: null,
+    desc: "老舗ステーキ店が出店。味噌ベースながらやや薄味で、もつを中心に大根やにんじんが具たくさんに入ったオーソドックスなスタイル。常陸牛ステーキが名物の売店でもある。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/yamabiko.jpeg",
+    base: "味噌",
+    scores: { taste:3, unique:2, motsu_veg:3, not_crowded:4, other_menu:4, base_type:1 }
+  },
+  {
+    name: "タカノ（もつ煮）",
+    location: "バックスタンド2階ホーム側",
+    locationNote: null,
+    desc: "食肉と同じもつ煮が食べられる穴場店！食肉より並びにくいのでお得情報。濃い目の味噌ベースでもつたっぷり。王道のもつ煮を食肉より空いた環境で食べたいならここ！",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/takano.jpeg",
+    base: "味噌",
+    scores: { taste:4, unique:1, motsu_veg:4, not_crowded:4, other_menu:2, base_type:1 }
+  },
+  {
+    name: "タカノ（トマトもつ煮）",
+    location: "バックスタンド2階ホーム側",
+    locationNote: null,
+    desc: "タカノで提供されるトマトもつ煮。もつの臭みがトマトでさっぱり消え、チーズをかけていただく変化球の一杯。ゆがふとはまた違う個性的なトマトもつ煮が楽しめる。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/takano_tomato.jpeg",
+    base: "トマト",
+    scores: { taste:2, unique:5, motsu_veg:3, not_crowded:4, other_menu:2, base_type:5 }
+  },
+  {
+    name: "ゆがふ",
+    location: "バックスタンド2階ホーム側",
+    locationNote: null,
+    desc: "カシマ随一の変化球、トマトもつ煮の元祖。ジャンルはもはやミネストローネに近く、もつ煮が苦手な人でも食べられる一杯。チーズ・タバスコで味変でき、トーストやライスとも相性抜群。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/yugafu.jpeg",
+    base: "トマト",
+    scores: { taste:3, unique:5, motsu_veg:2, not_crowded:3, other_menu:4, base_type:5 }
+  },
+  {
+    name: "よってげ家",
+    location: "バックスタンド2階アウェイ側",
+    locationNote: null,
+    desc: "醤油ベースのやや濃い目な味付け。もつを中心にこんにゃく・大根・にんじんがバランスよく入っており食べ応えあり。もつ煮をご飯にぶっかけた「もつまんま」も人気メニュー。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/yottegeya.jpeg",
+    base: "醤油",
+    scores: { taste:4, unique:3, motsu_veg:3, not_crowded:4, other_menu:2, base_type:3 }
+  },
+  {
+    name: "サムジィ〜",
+    location: "バックスタンド2階アウェイ側 or 場外売店",
+    locationNote: null,
+    desc: "メニューの豊富さが魅力の売店。醤油ベースながらあっさり目で野菜がたっぷり。ネギもたっぷり盛ってくれる気前の良さもポイント。野菜中心でさっぱり食べたい人に特におすすめ。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/samujii.jpeg",
+    base: "醤油",
+    scores: { taste:1, unique:4, motsu_veg:2, not_crowded:5, other_menu:3, base_type:3 }
+  },
+  {
+    name: "三櫻",
+    location: "メインスタンド2階ホーム側 or アウェイゴール裏2階メインスタンド側",
+    locationNote: null,
+    desc: "今年から2店舗展開になったお店。オーソドックスな味噌ベースの味付けで、具材がゴロゴロ入っており、特に大根は特大サイズ。メインスタンドのお店は現金オンリーの専用レーンで買える。",
+    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/sanen.jpeg",
+    base: "味噌",
+    scores: { taste:2, unique:2, motsu_veg:3, not_crowded:5, other_menu:2, base_type:1 }
+  }
+];
+
+var PRIORITIES = [
+  { id: "taste",  label: "🔥 味の濃さ" },
+  { id: "base",   label: "🍜 味のベース" },
+  { id: "motsu",  label: "🥩 もつ vs 野菜" },
+  { id: "unique", label: "✨ 変化球度" },
+  { id: "crowd",  label: "😌 混雑のしにくさ" },
+  { id: "menu",   label: "🍻 他メニューの充実" }
+];
+
+var DETAIL_QUESTIONS = {
+  taste: {
+    question: "味の濃さはどれが好みですか？",
+    choices: [
+      { label: "薄味があっさりした一杯がいい",   keys: { taste: 1 } },
+      { label: "ふつうの濃さがちょうどいい",     keys: { taste: 3 } },
+      { label: "濃い味でこってりしたものがいい",  keys: { taste: 5 } }
+    ]
+  },
+  motsu: {
+    question: "もつと野菜、どちらが多い方が好みですか？",
+    choices: [
+      { label: "もつがたっぷり入っていてほしい",    keys: { motsu_veg: 5 } },
+      { label: "もつと野菜がバランスよく入っている", keys: { motsu_veg: 3 } },
+      { label: "野菜がたっぷり入っていてほしい",    keys: { motsu_veg: 1 } }
+    ]
+  },
+  base: {
+    question: "味のベースの好みは？",
+    choices: [
+      { label: "味噌ベースが好き",             keys: { base_type: 1 } },
+      { label: "醤油ベースが好き",             keys: { base_type: 3 } },
+      { label: "トマトなど変わり種も気になる", keys: { base_type: 5 } },
+      { label: "こだわらない",                 keys: {} }
+    ]
+  },
+  unique: {
+    question: "王道と変化球、どちらが好みですか？",
+    choices: [
+      { label: "王道のもつ煮が食べたい",           keys: { unique: 1 } },
+      { label: "個性的な変化球のもつ煮も気になる", keys: { unique: 5 } }
+    ]
+  },
+  crowd: {
+    question: "混雑はどのくらい気になりますか？",
+    choices: [
+      { label: "並ぶのは嫌、空いてる方がいい", keys: { not_crowded: 5 } },
+      { label: "少し並ぶくらいは平気",         keys: { not_crowded: 3 } },
+      { label: "行列覚悟！人気店に行きたい",     keys: { not_crowded: 1 } }
+    ]
+  },
+  menu: {
+    question: "もつ煮以外のメニューも楽しみたいですか？",
+    choices: [
+      { label: "はい、いろいろ食べたい！",     keys: { other_menu: 5 } },
+      { label: "あればうれしいけどこだわらない", keys: { other_menu: 3 } },
+      { label: "もつ煮一本で十分！",           keys: { other_menu: 1 } }
+    ]
+  }
+};
+
+function calcScores(answers) {
+  // ユーザーの希望値をキーごとにまとめる
+  var userPrefs = {};
+  answers.forEach(function(ans) {
+    Object.keys(ans.keys).forEach(function(key) {
+      userPrefs[key] = ans.keys[key];
+    });
+  });
+
+  var scored = SHOPS.map(function(shop, idx) {
+    var totalDiff = 0;
+    var maxDiff = 0;
+    Object.keys(userPrefs).forEach(function(key) {
+      var userVal = userPrefs[key];
+      var shopVal = shop.scores[key] || 0;
+      totalDiff += Math.abs(userVal - shopVal);
+      maxDiff += 4; // 1〜5の範囲なので最大差は4
+    });
+    var score = maxDiff > 0 ? Math.round((1 - totalDiff / maxDiff) * 100) : 100;
+    return { shop: shop, pct: score, total: score, idx: idx };
+  });
+  // 同点の場合は混雑度が低い（人気店）を優先、さらに同点なら登録順
+  scored.sort(function(a, b) {
+    if (b.total !== a.total) return b.total - a.total;
+    var aCrowd = a.shop.scores.not_crowded || 5;
+    var bCrowd = b.shop.scores.not_crowded || 5;
+    if (aCrowd !== bCrowd) return aCrowd - bCrowd;
+    return a.idx - b.idx;
+  });
+  return scored;
+}
+
+var chatWindow = document.getElementById('chat-window');
+var answers = [];
+var selectedPriorities = [];
+var detailQueue = [];
+var detailIndex = 0;
+
+function appendMsg(role, content) {
+  var msg = document.createElement('div');
+  msg.className = 'msg ' + role;
+  var avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = role === 'bot' ? '🍲' : '👤';
+  var bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if (typeof content === 'string') {
+    bubble.innerHTML = content;
+  } else {
+    bubble.appendChild(content);
+  }
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+  chatWindow.appendChild(msg);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  return bubble;
+}
+
+function showPrioritySelect() {
+  setTimeout(function() {
+    var div = document.createElement('div');
+    div.innerHTML = '<div style="margin-bottom:10px">何を重視しますか？<br><span style="font-size:0.78rem;color:rgba(245,240,235,0.5)">当てはまるものを選んで「決定」を押してください（複数選択可）</span></div>';
+
+    var grid = document.createElement('div');
+    grid.className = 'priority-grid';
+    var selected = {};
+
+    PRIORITIES.forEach(function(p) {
+      var btn = document.createElement('button');
+      btn.className = 'priority-btn';
+      btn.innerHTML = p.label;
+      btn.onclick = function() {
+        if (selected[p.id]) {
+          delete selected[p.id];
+          btn.classList.remove('selected');
+        } else {
+          selected[p.id] = true;
+          btn.classList.add('selected');
+        }
+        confirmBtn.disabled = Object.keys(selected).length === 0;
+      };
+      grid.appendChild(btn);
+    });
+
+    var confirmBtn = document.createElement('button');
+    confirmBtn.className = 'confirm-btn';
+    confirmBtn.textContent = '決定する →';
+    confirmBtn.disabled = true;
+    confirmBtn.onclick = function() {
+      grid.querySelectorAll('.priority-btn').forEach(function(b) { b.disabled = true; });
+      confirmBtn.disabled = true;
+      selectedPriorities = Object.keys(selected);
+      var labels = PRIORITIES.filter(function(p) { return selected[p.id]; }).map(function(p) { return p.label; });
+      appendMsg('user', labels.join('　'));
+      detailQueue = selectedPriorities.slice();
+      detailIndex = 0;
+      showNextDetail();
+    };
+
+    div.appendChild(grid);
+    div.appendChild(confirmBtn);
+    appendMsg('bot', div);
+  }, 600);
+}
+
+function showNextDetail() {
+  if (detailIndex >= detailQueue.length) {
+    showResult();
+    return;
+  }
+  var key = detailQueue[detailIndex];
+  var q = DETAIL_QUESTIONS[key];
+  var total = detailQueue.length;
+  var current = detailIndex + 1;
+
+  setTimeout(function() {
+    var div = document.createElement('div');
+    var indicator = document.createElement('div');
+    indicator.className = 'step-indicator';
+    indicator.textContent = current + ' / ' + total;
+    div.appendChild(indicator);
+
+    var qText = document.createElement('div');
+    qText.style.marginBottom = '4px';
+    qText.textContent = q.question;
+    div.appendChild(qText);
+
+    var choices = document.createElement('div');
+    choices.className = 'choices';
+
+    q.choices.forEach(function(choice) {
+      var btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = choice.label;
+      btn.onclick = function() {
+        choices.querySelectorAll('.choice-btn').forEach(function(b) { b.disabled = true; });
+        btn.classList.add('selected');
+        appendMsg('user', choice.label);
+        answers.push(choice);
+        detailIndex++;
+        showNextDetail();
+      };
+      choices.appendChild(btn);
+    });
+
+    div.appendChild(choices);
+    appendMsg('bot', div);
+  }, 600);
+}
+
+function showResult() {
+  setTimeout(function() {
+    var ranked = calcScores(answers);
+    var best = ranked[0];
+
+    var div = document.createElement('div');
+    div.innerHTML = 'あなたにぴったりのもつ煮はこちらです！🎉';
+
+    var card = document.createElement('div');
+    card.className = 'result-card';
+
+    var badge = document.createElement('div');
+    badge.className = 'result-rank';
+    badge.textContent = '🏆 BEST MATCH';
+    card.appendChild(badge);
+
+    if (best.shop.image) {
+      var img = document.createElement('img');
+      img.className = 'result-img';
+      img.src = best.shop.image;
+      img.alt = best.shop.name;
+      card.appendChild(img);
+    } else {
+      var ph = document.createElement('div');
+      ph.className = 'result-img-placeholder';
+      ph.textContent = '🍲';
+      card.appendChild(ph);
+    }
+
+    var body = document.createElement('div');
+    body.className = 'result-body';
+
+    var name = document.createElement('div');
+    name.className = 'result-name';
+    name.textContent = best.shop.name;
+    body.appendChild(name);
+
+    // 味のベースバッジ
+    var baseBadge = document.createElement('span');
+    var baseClass = best.shop.base === '味噌' ? 'base-miso' : best.shop.base === '醤油' ? 'base-shoyu' : 'base-tomato';
+    var baseEmoji = best.shop.base === '味噌' ? '🍜' : best.shop.base === '醤油' ? '🥢' : '🍅';
+    baseBadge.className = 'base-badge ' + baseClass;
+    baseBadge.textContent = baseEmoji + ' ' + best.shop.base + 'ベース';
+    body.appendChild(baseBadge);
+
+    // 場所情報
+    var locDiv = document.createElement('div');
+    locDiv.style.cssText = 'font-size:0.78rem;color:rgba(201,168,76,0.8);margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;';
+    var locText = '📍 ' + best.shop.location;
+    locDiv.innerHTML = locText;
+    if (best.shop.locationNote) {
+      var noteSpan = document.createElement('span');
+      noteSpan.style.cssText = 'background:#C8102E;color:#fff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;';
+      noteSpan.textContent = '⚠️ ' + best.shop.locationNote;
+      locDiv.appendChild(noteSpan);
+    }
+    body.appendChild(locDiv);
+
+    var desc = document.createElement('div');
+    desc.className = 'result-desc';
+    desc.textContent = best.shop.desc;
+    body.appendChild(desc);
+
+    card.appendChild(body);
+    div.appendChild(card);
+
+    if (ranked.length > 1) {
+      var ru = document.createElement('div');
+      ru.className = 'runner-up';
+      var ruTitle = document.createElement('div');
+      ruTitle.className = 'runner-up-title';
+      ruTitle.textContent = '他のおすすめ';
+      ru.appendChild(ruTitle);
+      ranked.slice(1, 3).forEach(function(r, i) {
+        var row = document.createElement('div');
+        row.className = 'runner-up-row';
+        var locNote = r.shop.locationNote ? '<span style="background:#C8102E;color:#fff;font-size:0.65rem;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:4px;">&#x26A0;&#xFE0F; ' + r.shop.locationNote + '</span>' : '';
+        var baseClass2 = r.shop.base === '味噌' ? 'base-miso' : r.shop.base === '醤油' ? 'base-shoyu' : 'base-tomato';
+        var baseEmoji2 = r.shop.base === '味噌' ? '🍜' : r.shop.base === '醤油' ? '🥢' : '🍅';
+        var uid = 'rdesc-' + i;
+        var info = document.createElement('div');
+        info.className = 'runner-up-info';
+        info.innerHTML =
+          '<span class="runner-up-name">' + r.shop.name + locNote + '</span>' +
+          '<span class="runner-up-location">&#x1F4CD; ' + r.shop.location + '</span>' +
+          '<span class="base-badge ' + baseClass2 + '" style="margin-top:2px;">' + baseEmoji2 + ' ' + r.shop.base + 'ベース</span>';
+        var toggleBtn = document.createElement('button');
+        toggleBtn.className = 'desc-toggle';
+        toggleBtn.textContent = '説明を見る ▼';
+        toggleBtn.setAttribute('data-uid', uid);
+        toggleBtn.onclick = function() {
+          var d = document.getElementById(this.getAttribute('data-uid'));
+          if (d.style.display === 'none') {
+            d.style.display = 'block';
+            this.textContent = '閉じる ▲';
+          } else {
+            d.style.display = 'none';
+            this.textContent = '説明を見る ▼';
+          }
+        };
+        var descDiv = document.createElement('div');
+        descDiv.id = uid;
+        descDiv.style.cssText = 'display:none;font-size:0.78rem;color:rgba(245,240,235,0.6);line-height:1.6;margin-top:4px;';
+        descDiv.textContent = r.shop.desc;
+        info.appendChild(toggleBtn);
+        info.appendChild(descDiv);
+        var num = document.createElement('span');
+        num.className = 'runner-up-num';
+        num.textContent = (i + 2) + '位';
+        row.appendChild(num);
+        row.appendChild(info);
+        ru.appendChild(row);
+      });
+      div.appendChild(ru);
+    }
+
+    var restart = document.createElement('button');
+    restart.className = 'restart-btn';
+    restart.textContent = '🔄 もう一度診断する';
+    restart.onclick = function() {
+      chatWindow.innerHTML = '';
+      answers = [];
+      selectedPriorities = [];
+      detailQueue = [];
+      detailIndex = 0;
+      startFlow();
+
+document.addEventListener('DOMContentLoaded', function() {
+  var searchInput = document.getElementById('shop-search');
+  var searchClear = document.getElementById('search-clear');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() { handleSearch(this.value); });
+  }
+  if (searchClear) {
+    searchClear.addEventListener('click', function() {
+      document.getElementById('shop-search').value = '';
+      handleSearch('');
+    });
+  }
+});
+    };
+    div.appendChild(restart);
+
+    appendMsg('bot', div);
+  }, 800);
+}
+
+// お店検索機能
+var BASE_EMOJI = { '味噌': '🍜', '醤油': '🥢', 'トマト': '🍅' };
+var BASE_CLASS = { '味噌': 'base-miso', '醤油': 'base-shoyu', 'トマト': 'base-tomato' };
+
+function handleSearch(query) {
+  var area = document.getElementById('search-results');
+  var q = query.trim().toLowerCase();
+  if (!q) { area.style.display = 'none'; area.innerHTML = ''; return; }
+
+  var hits = SHOPS.filter(function(s) {
+    return s.name.toLowerCase().indexOf(q) !== -1 ||
+           s.desc.toLowerCase().indexOf(q) !== -1 ||
+           s.location.toLowerCase().indexOf(q) !== -1 ||
+           (s.base && s.base.indexOf(q) !== -1);
+  });
+
+  area.style.display = 'block';
+  area.innerHTML = '';
+
+  if (hits.length === 0) {
+    var noResult = document.createElement('div');
+    noResult.style.cssText = 'color:rgba(245,240,235,0.4);font-size:0.82rem;padding:8px 0;';
+    noResult.textContent = '該当するお店が見つかりませんでした';
+    area.appendChild(noResult);
+    return;
+  }
+
+  hits.forEach(function(s) {
+    var bc = s.base === '味噌' ? 'base-miso' : s.base === '醤油' ? 'base-shoyu' : 'base-tomato';
+    var be = s.base === '味噌' ? '🍜' : s.base === '醤油' ? '🥢' : '🍅';
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#1E1E1E;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;';
+    if (s.image) {
+      var img = document.createElement('img');
+      img.src = s.image;
+      img.style.cssText = 'width:100%;height:120px;object-fit:cover;border-radius:7px;margin-bottom:10px;display:block;';
+      card.appendChild(img);
+    }
+    var nameDiv = document.createElement('div');
+    nameDiv.style.cssText = 'font-weight:700;font-size:0.9rem;color:#C9A84C;margin-bottom:4px;';
+    nameDiv.textContent = s.name;
+    if (s.locationNote) {
+      var noteSpan = document.createElement('span');
+      noteSpan.style.cssText = 'background:#C8102E;color:#fff;font-size:0.65rem;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:6px;';
+      noteSpan.textContent = '⚠️ ' + s.locationNote;
+      nameDiv.appendChild(noteSpan);
+    }
+    card.appendChild(nameDiv);
+    var badge = document.createElement('span');
+    badge.className = 'base-badge ' + bc;
+    badge.textContent = be + ' ' + s.base + 'ベース';
+    card.appendChild(badge);
+    var locDiv = document.createElement('div');
+    locDiv.style.cssText = 'font-size:0.75rem;color:rgba(245,240,235,0.4);margin:4px 0;';
+    locDiv.textContent = '📍 ' + s.location;
+    card.appendChild(locDiv);
+    var descDiv = document.createElement('div');
+    descDiv.style.cssText = 'font-size:0.8rem;color:rgba(245,240,235,0.7);line-height:1.65;margin-top:6px;';
+    descDiv.textContent = s.desc;
+    card.appendChild(descDiv);
+    area.appendChild(card);
+  });
+}
+
+function startFlow() {
+  appendMsg('bot', 'こんにちは！🍲<br>メルスタのもつ煮、どれにしようか迷っていませんか？<br>いくつか教えてもらえれば、ぴったりの一杯を紹介します！');
+  showPrioritySelect();
+}
+
+startFlow();
+
+document.addEventListener('DOMContentLoaded', function() {
+  var searchInput = document.getElementById('shop-search');
+  var searchClear = document.getElementById('search-clear');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() { handleSearch(this.value); });
+  }
+  if (searchClear) {
+    searchClear.addEventListener('click', function() {
+      document.getElementById('shop-search').value = '';
+      handleSearch('');
+    });
+  }
+});
+</script>
+</body>
+</html>
