@@ -289,6 +289,11 @@
   <div id="chat-window"></div>
 </main>
 
+<footer style="max-width:680px;width:100%;margin:0 auto;padding:0 16px 20px;text-align:center;font-size:0.7rem;line-height:1.7;color:rgba(245,240,235,0.4);">
+アクセス解析のため Google Analytics を使用しています。Cookie 等を通じて閲覧に関する情報が Google に送信されます。<br>
+このサイト自体は、氏名・メールアドレスなどの入力を求めておらず、取得もしていません。
+</footer>
+
 <script>
 var SHOPS = [
   {
@@ -296,7 +301,7 @@ var SHOPS = [
     location: "メインスタンド2階アウェイ側",
     locationNote: null,
     desc: "全てのもつ煮はここから始まる、もつ煮界のキング。濃い目の味噌ベースでもつが具材の6〜7割を占める王道スタイル。カシマのもつ煮を初めて食べるならまずここから！",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/shokuniku.jpeg",
+    image: "shokuniku.jpeg",
     base: "味噌",
     scores: { taste:4, unique:1, motsu_veg:4, not_crowded:1, other_menu:2, base_type:1 }
   },
@@ -305,7 +310,7 @@ var SHOPS = [
     location: "メインスタンド2階アウェイ側",
     locationNote: null,
     desc: "醤油ベースのわりとあっさりした味付け。ざく切りで分厚くカットされた具材は食べ応え十分で、ネギがたっぷり入っておりネギ好きには嬉しい一杯。もつ煮丼もあり。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/igarashi.jpeg",
+    image: "igarashi.jpeg",
     base: "醤油",
     scores: { taste:2, unique:3, motsu_veg:3, not_crowded:4, other_menu:4, base_type:3 }
   },
@@ -314,7 +319,7 @@ var SHOPS = [
     location: "場外売店 or ホームゴール裏4階スタンド",
     locationNote: "特定日限定",
     desc: "カシマ名物「ハラミメシ」を生み出した売店。濃い目の味噌ベースでもつ多め。豆腐がもつ煮の旨味を吸って絶品。ピリ辛の赤もつ煮・赤メシもあり、Xで公開されている試合日限定メニューも要チェック！",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/dream.jpeg",
+    image: "dream.jpeg",
     base: "味噌",
     scores: { taste:5, unique:2, motsu_veg:3, not_crowded:1, other_menu:5, base_type:1 }
   },
@@ -323,7 +328,7 @@ var SHOPS = [
     location: "メインスタンド2階ホーム側",
     locationNote: null,
     desc: "味噌ベースながら食べやすいあっさり目な味付けが特徴。もつや野菜のバランスが良くクセがなくとっつきやすい。しらす丼やつみれ汁が名物の売店で、もつ煮は穴場的存在。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/nakamachi.jpeg",
+    image: "nakamachi.jpeg",
     base: "味噌",
     scores: { taste:4, unique:1, motsu_veg:5, not_crowded:3, other_menu:5, base_type:1 }
   },
@@ -332,7 +337,7 @@ var SHOPS = [
     location: "ホームゴール裏2階メインスタンド側",
     locationNote: null,
     desc: "醤油の味が強めで個性的な一杯。ゴロゴロ入った大きな大根がとにかく印象的で、もつ煮の旨味がしっかり染み込んでいる。もつ煮うどん・もつ煮そばも同価格で楽しめる！",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/emiil.jpeg",
+    image: "emiil.jpeg",
     base: "醤油",
     scores: { taste:3, unique:3, motsu_veg:3, not_crowded:1, other_menu:5, base_type:3 }
   },
@@ -341,7 +346,7 @@ var SHOPS = [
     location: "ホームゴール裏2階中央付近",
     locationNote: null,
     desc: "隠れファンが少なくない穴場店。味噌がかなり濃く、もつにたっぷり染み込んだ旨味が特徴。にんじん・こんにゃく・大根もしっかり入り、粗めのネギがアクセントになっている。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/yatagawa.jpeg",
+    image: "yatagawa.jpeg",
     base: "味噌",
     scores: { taste:5, unique:2, motsu_veg:4, not_crowded:4, other_menu:3, base_type:1 }
   },
@@ -350,7 +355,7 @@ var SHOPS = [
     location: "ホームゴール裏2階バックスタンド側",
     locationNote: null,
     desc: "鹿嶋市内の蕎麦屋が出店。味噌ベースながらあっさり目で、もつと大根がメインのシンプルな構成。小サイズがあるので他店と食べ歩きしたいときにもピッタリな一杯。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/masuya.jpeg",
+    image: "masuya.jpeg",
     base: "味噌",
     scores: { taste:2, unique:4, motsu_veg:2, not_crowded:4, other_menu:3, base_type:1 }
   },
@@ -359,7 +364,7 @@ var SHOPS = [
     location: "ホームゴール裏2階バックスタンド側",
     locationNote: null,
     desc: "老舗ステーキ店が出店。味噌ベースながらやや薄味で、もつを中心に大根やにんじんが具たくさんに入ったオーソドックスなスタイル。常陸牛ステーキが名物の売店でもある。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/yamabiko.jpeg",
+    image: "yamabiko.jpeg",
     base: "味噌",
     scores: { taste:3, unique:2, motsu_veg:3, not_crowded:4, other_menu:4, base_type:1 }
   },
@@ -368,7 +373,7 @@ var SHOPS = [
     location: "バックスタンド2階ホーム側",
     locationNote: null,
     desc: "食肉と同じもつ煮が食べられる穴場店！食肉より並びにくいのでお得情報。濃い目の味噌ベースでもつたっぷり。王道のもつ煮を食肉より空いた環境で食べたいならここ！",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/takano.jpeg",
+    image: "takano.jpeg",
     base: "味噌",
     scores: { taste:4, unique:1, motsu_veg:4, not_crowded:4, other_menu:2, base_type:1 }
   },
@@ -377,7 +382,7 @@ var SHOPS = [
     location: "バックスタンド2階ホーム側",
     locationNote: null,
     desc: "タカノで提供されるトマトもつ煮。もつの臭みがトマトでさっぱり消え、チーズをかけていただく変化球の一杯。ゆがふとはまた違う個性的なトマトもつ煮が楽しめる。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/takano_tomato.jpeg",
+    image: "takano_tomato.jpeg",
     base: "トマト",
     scores: { taste:2, unique:5, motsu_veg:3, not_crowded:4, other_menu:2, base_type:5 }
   },
@@ -386,7 +391,7 @@ var SHOPS = [
     location: "バックスタンド2階ホーム側",
     locationNote: null,
     desc: "カシマ随一の変化球、トマトもつ煮の元祖。ジャンルはもはやミネストローネに近く、もつ煮が苦手な人でも食べられる一杯。チーズ・タバスコで味変でき、トーストやライスとも相性抜群。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/yugafu.jpeg",
+    image: "yugafu.jpeg",
     base: "トマト",
     scores: { taste:3, unique:5, motsu_veg:2, not_crowded:3, other_menu:4, base_type:5 }
   },
@@ -395,7 +400,7 @@ var SHOPS = [
     location: "バックスタンド2階アウェイ側",
     locationNote: null,
     desc: "醤油ベースのやや濃い目な味付け。もつを中心にこんにゃく・大根・にんじんがバランスよく入っており食べ応えあり。もつ煮をご飯にぶっかけた「もつまんま」も人気メニュー。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/yottegeya.jpeg",
+    image: "yottegeya.jpeg",
     base: "醤油",
     scores: { taste:4, unique:3, motsu_veg:3, not_crowded:4, other_menu:2, base_type:3 }
   },
@@ -404,7 +409,7 @@ var SHOPS = [
     location: "バックスタンド2階アウェイ側 or 場外売店",
     locationNote: null,
     desc: "メニューの豊富さが魅力の売店。醤油ベースながらあっさり目で野菜がたっぷり。ネギもたっぷり盛ってくれる気前の良さもポイント。野菜中心でさっぱり食べたい人に特におすすめ。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/samujii.jpeg",
+    image: "samujii.jpeg",
     base: "醤油",
     scores: { taste:1, unique:4, motsu_veg:2, not_crowded:5, other_menu:3, base_type:3 }
   },
@@ -413,7 +418,7 @@ var SHOPS = [
     location: "メインスタンド2階ホーム側 or アウェイゴール裏2階メインスタンド側",
     locationNote: null,
     desc: "今年から2店舗展開になったお店。オーソドックスな味噌ベースの味付けで、具材がゴロゴロ入っており、特に大根は特大サイズ。メインスタンドのお店は現金オンリーの専用レーンで買える。",
-    image: "https://raw.githubusercontent.com/Takegola/antlers-bot/main/sanen.jpeg",
+    image: "sanen.jpeg",
     base: "味噌",
     scores: { taste:2, unique:2, motsu_veg:3, not_crowded:5, other_menu:2, base_type:1 }
   }
